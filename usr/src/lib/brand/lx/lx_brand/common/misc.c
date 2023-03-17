@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <priv.h>
 #include <strings.h>
+#include <sys/cred.h>
 #include <sys/reboot.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
@@ -107,7 +108,7 @@ lx_setgroups16(uintptr_t p1, uintptr_t p2)
 		grouplist32[i] = LX_GID16_TO_GID32(grouplist[i]);
 
 	/* order matters here to get the correct errno back */
-	if (count > NGROUPS_MAX_DEFAULT) {
+	if (count > ngroups_max) {
 		free(grouplist);
 		free(grouplist32);
 		return (-EINVAL);
@@ -284,7 +285,7 @@ lx_setgroups(uintptr_t p1, uintptr_t p2)
 	}
 
 	/* order matters here to get the correct errno back */
-	if (ng > NGROUPS_MAX_DEFAULT) {
+	if (ng > ngroups_max) {
 		free(glist);
 		return (-EINVAL);
 	}
